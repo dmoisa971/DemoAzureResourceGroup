@@ -1,0 +1,103 @@
+﻿{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "servers_name": {
+      "defaultValue": "armdatabaseserver",
+      "type": "string"
+    },
+    "databases_name": {
+      "defaultValue": "armtest/armdatabase",
+      "type": "string"
+    },
+    "databases_master_name": {
+      "defaultValue": "armtest/master",
+      "type": "string"
+    },
+    "firewallRules_AllowAllWindowsAzureIps_name": {
+      "defaultValue": "armtest/AllowAllWindowsAzureIps",
+      "type": "string"
+    },
+    "firewallRules_ClientIPAddress_2016_3_0_13_52_2_name": {
+      "defaultValue": "armtest/ClientIPAddress_2016-3-0_13-52-2",
+      "type": "string"
+    }
+  },
+  "variables": { },
+  "resources": [
+    {
+      "apiVersion": "2014-04-01-preview",
+      "comments": "Création du server de base de données",
+      "dependsOn": [ ],
+      "kind": "v12.0",
+      "location": "[resourceGroup().location]",
+      "name": "[parameters('servers_name')]",
+      "properties": {
+        "administratorLogin": "dmoisa",
+        "administratorLoginPassword": null,
+        "version": "12.0"
+      },
+      "resources": [ ],
+      "type": "Microsoft.Sql/servers"
+    },
+    {
+      "comments": "Création de la base de données liée au serveur",
+      "type": "Microsoft.Sql/servers/databases",
+      "kind": "v12.0,user",
+      "name": "[parameters('databases_name')]",
+      "apiVersion": "2014-04-01-preview",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "databaseId": "06b36df3-8ede-463e-ac7c-484d7bbbeb7b",
+        "edition": "Basic",
+        "status": "Online",
+        "serviceLevelObjective": "Basic",
+        "collation": "SQL_Latin1_General_CP1_CI_AS",
+        "maxSizeBytes": "2147483648",
+        "creationDate": "2016-04-17T19:39:07.25Z",
+        "currentServiceObjectiveId": "dd6d99bb-f193-4ec1-86f2-43d3bccbc49c",
+        "requestedServiceObjectiveId": "dd6d99bb-f193-4ec1-86f2-43d3bccbc49c",
+        "requestedServiceObjectiveName": "Basic",
+        "defaultSecondaryLocation": "North Europe",
+        "earliestRestoreDate": "2016-08-11T00:00:00Z",
+        "elasticPoolName": null,
+        "containmentState": 2
+      },
+      "resources": [ ],
+      "dependsOn": [
+        "[resourceId('Microsoft.Sql/servers', parameters('servers_name'))]"
+      ]
+    },
+    {
+      "comments": "Ajout de la règle permettant au service Azure de se connecter à la base de données",
+      "type": "firewallrules",
+      "kind": "v12.0",
+      "name": "[parameters('firewallRules_AllowAllWindowsAzureIps_name')]",
+      "apiVersion": "2014-04-01-preview",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "startIpAddress": "0.0.0.0",
+        "endIpAddress": "0.0.0.0"
+      },
+      "resources": [ ],
+      "dependsOn": [
+        "[resourceId('Microsoft.Sql/servers', parameters('servers_name'))]"
+      ]
+    },
+    {
+      "comments": "Ajout d'une adresse IP cliente permettant de se connecter à la base de données avec SQL Server Management Studio par exemple",
+      "kind": "v12.0",
+      "name": "[parameters('firewallRules_ClientIPAddress_2016_3_0_13_52_2_name')]",
+      "apiVersion": "2014-04-01-preview",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "startIpAddress": "192.168.1.12",
+        "endIpAddress": "192.168.1.12"
+      },
+      "resources": [ ],
+      "dependsOn": [
+        "[resourceId('Microsoft.Sql/servers', parameters('servers_name'))]"
+      ]
+    }
+  ]
+}

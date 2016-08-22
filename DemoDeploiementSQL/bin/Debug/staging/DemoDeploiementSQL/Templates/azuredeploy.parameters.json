@@ -1,0 +1,20 @@
+﻿{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "demodeploiementAdminLogin": {
+            "value": "dmoisa"
+        },
+        "basetestdeploiementName": {
+            "value": "baseTestDeploiementTemplate"
+        },
+        "demodeploiementAdminLoginPassword": {
+            "reference": {
+                "keyVault": {
+                    "id": "/subscriptions/e7708c7c-cd20-4196-9c3f-e41a8b2465fe/resourceGroups/testlabrg195531/providers/Microsoft.KeyVault/vaults/msdtl1786961389"
+                },
+                "secretName": "PasswordTemplateSQLServer"
+            }
+        }
+    }
+}

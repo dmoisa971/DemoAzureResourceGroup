@@ -1,0 +1,101 @@
+﻿{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "armsqlAdminLogin": {
+            "type": "string",
+            "minLength": 1
+        },
+        "armsqlAdminLoginPassword": {
+            "type": "securestring"
+        },
+        "sampledatabaseName": {
+            "type": "string",
+            "minLength": 1
+        },
+        "sampledatabaseCollation": {
+            "type": "string",
+            "minLength": 1,
+            "defaultValue": "SQL_Latin1_General_CP1_CI_AS"
+        },
+        "sampledatabaseEdition": {
+            "type": "string",
+            "defaultValue": "Basic",
+            "allowedValues": [
+                "Basic",
+                "Standard",
+                "Premium"
+            ]
+        },
+        "sampledatabaseRequestedServiceObjectiveName": {
+            "type": "string",
+            "defaultValue": "Basic",
+            "allowedValues": [
+                "Basic",
+                "S0",
+                "S1",
+                "S2",
+                "P1",
+                "P2",
+                "P3"
+            ],
+            "metadata": {
+                "description": "Describes the performance level for Edition"
+            }
+        }
+    },
+    "variables": {
+        "armsqlName": "[concat('armsql', uniqueString(resourceGroup().id))]"
+    },
+    "resources": [
+        {
+            "name": "[variables('armsqlName')]",
+            "type": "Microsoft.Sql/servers",
+            "location": "[resourceGroup().location]",
+            "apiVersion": "2014-04-01-preview",
+            "dependsOn": [ ],
+            "tags": {
+                "displayName": "armsql"
+            },
+            "properties": {
+                "administratorLogin": "[parameters('armsqlAdminLogin')]",
+                "administratorLoginPassword": "[parameters('armsqlAdminLoginPassword')]"
+            },
+            "resources": [
+                {
+                    "name": "AllowAllWindowsAzureIps",
+                    "type": "firewallrules",
+                    "location": "[resourceGroup().location]",
+                    "apiVersion": "2014-04-01-preview",
+                    "dependsOn": [
+                        "[concat('Microsoft.Sql/servers/', variables('armsqlName'))]"
+                    ],
+                    "properties": {
+                        "startIpAddress": "0.0.0.0",
+                        "endIpAddress": "0.0.0.0"
+                    }
+                },
+                {
+                    "name": "[parameters('sampledatabaseName')]",
+                    "type": "databases",
+                    "location": "[resourceGroup().location]",
+                    "apiVersion": "2014-04-01-preview",
+                    "dependsOn": [
+                        "[variables('armsqlName')]"
+                    ],
+                    "tags": {
+                        "displayName": "sampledatabase"
+                    },
+                    "properties": {
+                        "collation": "[parameters('sampledatabaseCollation')]",
+                        "edition": "[parameters('sampledatabaseEdition')]",
+                        "maxSizeBytes": "1073741824",
+                        "requestedServiceObjectiveName": "[parameters('sampledatabaseRequestedServiceObjectiveName')]"
+                    }
+                }
+            ]
+        }
+    ],
+    "outputs": {
+    }
+}
