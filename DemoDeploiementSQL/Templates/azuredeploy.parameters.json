@@ -12,7 +12,7 @@
     "demodeploiementAdminLoginPassword": {
       "reference": {
         "keyVault": {
-          "id": "/subscriptions/476decb3-06f4-4776-861a-ae1f5dfa8f83/resourceGroups/testdeploiementarmpowershell/providers/Microsoft.KeyVault/vaults/testdeploiementvaultdmo"
+          "id": "/subscriptions/<id de votre abonnement>/resourceGroups/testdeploiementarmpowershell/providers/Microsoft.KeyVault/vaults/testdeploiementvaultdmo"
         },
         "secretName": "sqlPassword"
       }
